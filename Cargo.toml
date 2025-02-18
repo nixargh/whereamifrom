@@ -1,13 +1,13 @@
 [package]
-name = "whereami"
+name = "whereamifrom"
 version = "0.1.0"
 edition = "2021"
 authors = ["nixargh <nixargh@protonmail.com>"]
 license = "MIT"
 description = "A tool to search files"
 readme = "README.md"
-homepage = "https://github.com/nixargh/whereami"
-repository = "https://github.com/nixargh/whereami"
+homepage = "https://github.com/nixargh/whereamifrom"
+repository = "https://github.com/nixargh/whereamifrom"
 keywords = ["cli", "location"]
 categories = ["command-line-utilities"]
 

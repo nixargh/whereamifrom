@@ -1,4 +1,4 @@
-# WhereAmI
+# Where Am I From
 
 ## Why
 
@@ -10,6 +10,6 @@ I need this as I often use some VPN tunnel and want to see my current "location"
 The code:
 - Checks number of active network connections.
 - If number changed app does HTTP request to external API returning geo location of IP address from where request comes.
-- Updates location country at `/tmp/whereami` file.
+- Updates location country at `/tmp/whereamifrom` file.
 
 Currently [https://ipinfo.io/](https://ipinfo.io/products/ip-geolocation-api) is used.

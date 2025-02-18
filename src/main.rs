@@ -69,7 +69,7 @@ fn get_location () -> String {
 }
 
 fn save_location(location: &String) -> std::io::Result<()> {
-    let mut file = File::create("/tmp/whereami")?;
+    let mut file = File::create("/tmp/whereamifrom")?;
     file.write_all(&location.as_bytes())?;
     Ok(())
 }

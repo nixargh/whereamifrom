@@ -5,12 +5,27 @@ use std::fs::File;
 use std::io::prelude::*;
 use reqwest;
 use log::{debug, error, info};
+use clap::Parser;
+
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    #[arg(short, long, env, default_value = "http://ipinfo.io/country")]
+    url: String,
+
+    #[arg(short, long, env, default_value = "/tmp/whereamifrom")]
+    file: String,
+
+    #[arg(short, long, env, default_value_t = 1)]
+    sleep: u64,
+}
 
 fn main() {
     env_logger::init();
 
-    let sleep_sec = 1;
-    let sleep_sec_dur = Duration::from_secs(sleep_sec);
+    let args = Args::parse();
+
+    let sleep_sec_dur = Duration::from_secs(args.sleep);
     let mut last_active_count = 0;
     let mut location = String::new();
 
@@ -20,8 +35,10 @@ fn main() {
 
         if active_count != last_active_count {
             info!("Network interfaces changes detected: {} => {}.", last_active_count, active_count);
-            location = update_location();
-            save_location(&location).unwrap_or_else(|err| {
+
+            location = get_location(&args.url);
+
+            save_location(&location, &args.file).unwrap_or_else(|err| {
                 error!("Failed to save location: '{}'.", err);
                 process::exit(1);
             });
@@ -30,7 +47,7 @@ fn main() {
         }
 
         debug!("Current location: {}.", location);
-        debug!("Going to sleep seconds: {}.", sleep_sec);
+        debug!("Going to sleep seconds: {}.", args.sleep);
         sleep(sleep_sec_dur);
     }
 }
@@ -49,27 +66,26 @@ fn get_active_interfaces() -> u32 {
     }
 
     debug!("Active interfaces number: {}.", active_int_count);
-
     return active_int_count;
 }
 
-fn update_location() -> String {
-    let location = String::from(get_location());
-    info!("Got location update: {}.", location);
-    return location
-}
-
-fn get_location () -> String {
-    let resp = match reqwest::blocking::get("http://ipinfo.io/country") {
+fn get_location(url: &String) -> String {
+    debug!("Requesting location update from: {}.", url);
+    let resp = match reqwest::blocking::get(url) {
         Ok(resp) => resp.text().unwrap().replace("\n", ""),
         Err(err) => panic!("Error: {}", err)
     };
 
+    info!("Got location update: {}.", resp);
     return resp
 }
 
-fn save_location(location: &String) -> std::io::Result<()> {
-    let mut file = File::create("/tmp/whereamifrom")?;
-    file.write_all(&location.as_bytes())?;
+fn save_location(location: &String, file: &String) -> std::io::Result<()> {
+    debug!("Writing location to file: '{}'.", file);
+
+    let mut file_obj = File::create(&file)?;
+    file_obj.write_all(&location.as_bytes())?;
+
+    info!("Location saved to: '{}'.", file);
     Ok(())
 }

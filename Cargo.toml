@@ -1,10 +1,10 @@
 [package]
 name = "whereamifrom"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["nixargh <nixargh@protonmail.com>"]
 license = "MIT"
-description = "A tool to search files"
+description = "A tool to detect country of your public IP"
 readme = "README.md"
 homepage = "https://github.com/nixargh/whereamifrom"
 repository = "https://github.com/nixargh/whereamifrom"
@@ -17,3 +17,4 @@ reqwest = { version = "0.11", features = ["blocking", "json"] }
 openssl = { version = "0.10", features = ["vendored"] }
 log = "0.4"
 env_logger = "0.9"
+clap = { version = "4.5", features = ["derive", "env", "wrap_help"] }

@@ -35,7 +35,9 @@ fn main() {
 
         if active_count != last_active_count {
             info!("Network interfaces changes detected: {} => {}.", last_active_count, active_count);
-            location = update_location(&args.url);
+
+            location = get_location(&args.url);
+
             save_location(&location, &args.file).unwrap_or_else(|err| {
                 error!("Failed to save location: '{}'.", err);
                 process::exit(1);
@@ -64,27 +66,26 @@ fn get_active_interfaces() -> u32 {
     }
 
     debug!("Active interfaces number: {}.", active_int_count);
-
     return active_int_count;
 }
 
-fn update_location(url: &String) -> String {
-    let location = String::from(get_location(&url));
-    info!("Got location update: {}.", location);
-    return location
-}
-
-fn get_location (url: &String) -> String {
+fn get_location(url: &String) -> String {
+    debug!("Requesting location update from: {}.", url);
     let resp = match reqwest::blocking::get(url) {
         Ok(resp) => resp.text().unwrap().replace("\n", ""),
         Err(err) => panic!("Error: {}", err)
     };
 
+    info!("Got location update: {}.", resp);
     return resp
 }
 
 fn save_location(location: &String, file: &String) -> std::io::Result<()> {
-    let mut file = File::create(&file)?;
-    file.write_all(&location.as_bytes())?;
+    debug!("Writing location to file: '{}'.", file);
+
+    let mut file_obj = File::create(&file)?;
+    file_obj.write_all(&location.as_bytes())?;
+
+    info!("Location saved to: '{}'.", file);
     Ok(())
 }

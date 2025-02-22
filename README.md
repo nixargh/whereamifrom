@@ -16,7 +16,7 @@ Currently [https://ipinfo.io/](https://ipinfo.io/products/ip-geolocation-api) is
 
 ## Usage
 
-Using command line arguments of environment variable you may change applicatio behavior. For example to get more information and use it any way you like:
+Using command line arguments or environment variable you may change applicatio behavior. For example to get more information and use it any way you like:
 ```shell
 $ FILE=/tmp/test URL=http://ipinfo.io/ ./target/debug/whereamifrom
 ```
@@ -24,7 +24,7 @@ Creates:
 ```json
 {
   "ip": "77.88.99.100",
-  "city": "Orgrimar",
+  "city": "Orgrimmar",
   "region": "Durotar",
   "country": "Kalimdor",
   "loc": "45.00,65.00",

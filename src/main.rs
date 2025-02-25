@@ -10,12 +10,15 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
+    /// Url to get location information from
     #[arg(short, long, env, default_value = "http://ipinfo.io/country")]
     url: String,
 
+    /// File path to save location to
     #[arg(short, long, env, default_value = "/tmp/whereamifrom")]
     file: String,
 
+    /// Seconds to sleep between network interfaces checks
     #[arg(short, long, env, default_value_t = 1)]
     sleep: u64,
 }
@@ -71,13 +74,21 @@ fn get_active_interfaces() -> u32 {
 
 fn get_location(url: &String) -> String {
     debug!("Requesting location update from: {}.", url);
-    let resp = match reqwest::blocking::get(url) {
-        Ok(resp) => resp.text().unwrap().replace("\n", ""),
-        Err(err) => panic!("Error: {}", err)
-    };
 
-    info!("Got location update: {}.", resp);
-    return resp
+    let location = do_request(&url).unwrap_or_else(|err| {
+        error!("Failed to update location: {}.", err);
+        String::from("NaN")
+    });
+
+    info!("Got location update: {}.", location);
+    location
+}
+
+fn do_request(url: &String) -> Result<String, String> {
+    match reqwest::blocking::get(url) {
+        Ok(resp) => return Ok(resp.text().unwrap().replace("\n", "")),
+        Err(err) => return Err(err.to_string()),
+    };
 }
 
 fn save_location(location: &String, file: &String) -> std::io::Result<()> {

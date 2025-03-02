@@ -1,0 +1,33 @@
+---
+name: Lint
+
+permissions:
+  checks: write
+  contents: write
+
+jobs:
+  run-linters:
+    name: Run linters
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      # Install your linters here
+      - name: Install rustup
+        env:
+          - DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt upgrade
+          sudo apt install -y rustup
+
+      - name: Install clippy
+        run: |
+          rustup update
+          rustup component add clippy
+
+      - name: Run linters
+        uses: wearerequired/lint-action@v2
+        with:
+          clippy: true

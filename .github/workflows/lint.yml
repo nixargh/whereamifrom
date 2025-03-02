@@ -20,7 +20,7 @@ jobs:
       # Install your linters here
       - name: Install rustup
         env:
-          - DEBIAN_FRONTEND: noninteractive
+          DEBIAN_FRONTEND: noninteractive
         run: |
           sudo apt upgrade
           sudo apt install -y rustup

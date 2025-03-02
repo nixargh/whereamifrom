@@ -5,6 +5,9 @@ permissions:
   checks: write
   contents: write
 
+on:
+  - push
+
 jobs:
   run-linters:
     name: Run linters

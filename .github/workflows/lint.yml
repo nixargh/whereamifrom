@@ -22,7 +22,7 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo apt upgrade
+          sudo apt update
           sudo apt install -y rustup
 
       - name: Install clippy

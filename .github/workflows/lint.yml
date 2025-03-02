@@ -31,6 +31,4 @@ jobs:
           rustup component add clippy
 
       - name: Run linters
-        uses: wearerequired/lint-action@v2
-        with:
-          clippy: true
+        run: cargo clippy --all-targets --all-features -- -D warnings

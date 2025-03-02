@@ -3,7 +3,7 @@ use std::time::Duration;
 use std::thread::sleep;
 use std::fs::File;
 use std::io::prelude::*;
-use log::{debug, error, info};
+use log::{debug, error, warn, info};
 use clap::Parser;
 
 #[derive(Parser, Debug)]
@@ -20,6 +20,10 @@ struct Args {
     /// Seconds to sleep between network interfaces checks
     #[arg(short, long, env, default_value_t = 1)]
     sleep: u64,
+
+    /// String for undefined location.
+    #[arg(long, env, default_value = "NaN")]
+    undef: String,
 }
 
 fn main() {
@@ -38,17 +42,22 @@ fn main() {
         if active_count != last_active_count {
             info!("Network interfaces changes detected: {} => {}.", last_active_count, active_count);
 
-            location = get_location(&args.url);
+            location = get_location(&args.url, &args.undef);
 
             save_location(&location, &args.file).unwrap_or_else(|err| {
                 error!("Failed to save location: '{}'.", err);
                 process::exit(1);
             });
 
-            last_active_count = active_count;
+            if location != args.undef {
+                last_active_count = active_count;
+            } else {
+                warn!("Failed to define a location, setting interfaces count to: 0.");
+                last_active_count = 0;
+            }
         }
 
-        debug!("Current location: {}.", location);
+        debug!("Current location: '{}'.", location);
         debug!("Going to sleep seconds: {}.", args.sleep);
         sleep(sleep_sec_dur);
     }
@@ -71,15 +80,15 @@ fn get_active_interfaces() -> u32 {
     active_int_count
 }
 
-fn get_location(url: &String) -> String {
-    debug!("Requesting location update from: {}.", url);
+fn get_location(url: &String, undef: &String) -> String {
+    debug!("Requesting location update from: '{}'.", url);
 
     let location = do_request(url).unwrap_or_else(|err| {
-        error!("Failed to update location: {}.", err);
-        String::from("NaN")
+        error!("Failed to update location: '{}'.", err);
+        String::from(undef)
     });
 
-    info!("Got location update: {}.", location);
+    info!("Got location update: '{}'.", location);
     location
 }
 

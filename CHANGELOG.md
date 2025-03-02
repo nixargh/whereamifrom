@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.5.0] - 2025-03-02
 ### Added
 - `CI` **Lint** workload.
+- New flag `--undef` to set a value for undefined location.
+
+### Fixed
+- All lint errors.
+
+### Changed
+- Keep checking location every round despite interfaces number change if the last check failed.
 
 ## [0.4.0] - 2025-02-27
 ### Added

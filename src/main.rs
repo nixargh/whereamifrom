@@ -3,7 +3,6 @@ use std::time::Duration;
 use std::thread::sleep;
 use std::fs::File;
 use std::io::prelude::*;
-use reqwest;
 use log::{debug, error, info};
 use clap::Parser;
 
@@ -62,20 +61,20 @@ fn get_active_interfaces() -> u32 {
     debug!("Interfaces number: {}.", interfaces.len());
 
     for interface in interfaces {
-        if interface.is_up() == true {
+        if interface.is_up() {
             active_int_count += 1;
             debug!("Active interface: {}.", interface.name)
         }
     }
 
     debug!("Active interfaces number: {}.", active_int_count);
-    return active_int_count;
+    active_int_count
 }
 
 fn get_location(url: &String) -> String {
     debug!("Requesting location update from: {}.", url);
 
-    let location = do_request(&url).unwrap_or_else(|err| {
+    let location = do_request(url).unwrap_or_else(|err| {
         error!("Failed to update location: {}.", err);
         String::from("NaN")
     });
@@ -86,16 +85,16 @@ fn get_location(url: &String) -> String {
 
 fn do_request(url: &String) -> Result<String, String> {
     match reqwest::blocking::get(url) {
-        Ok(resp) => return Ok(resp.text().unwrap().replace("\n", "")),
-        Err(err) => return Err(err.to_string()),
-    };
+        Ok(resp) => Ok(resp.text().unwrap().replace("\n", "")),
+        Err(err) => Err(err.to_string()),
+    }
 }
 
 fn save_location(location: &String, file: &String) -> std::io::Result<()> {
     debug!("Writing location to file: '{}'.", file);
 
-    let mut file_obj = File::create(&file)?;
-    file_obj.write_all(&location.as_bytes())?;
+    let mut file_obj = File::create(file)?;
+    file_obj.write_all(location.as_bytes())?;
 
     info!("Location saved to: '{}'.", file);
     Ok(())

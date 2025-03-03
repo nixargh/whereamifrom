@@ -6,7 +6,8 @@ permissions:
   contents: write
 
 on:
-  - push
+  push:
+    tags-ignore: ["*"]
 
 jobs:
   run-linters:
